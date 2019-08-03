@@ -1,0 +1,22 @@
+{
+  "name": "discord-intendant",
+  "description": "Discord Intendant Bot",
+  "homepage": "https://github.com/yannlugrin/discord-intendant",
+  "license": "MIT",
+  "author": "Yann Lugrin <yann.lugrin@sans-savoir.net>",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:yannlugrin/discord-intendant.git"
+  },
+  "private": true,
+  "main": "index.js",
+  "engine": {
+    "npm": ">= 10.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.1.0"
+  },
+  "dependencies": {
+  }
+}
