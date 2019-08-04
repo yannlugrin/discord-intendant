@@ -14,6 +14,14 @@ class Guild {
     }
     return this.options.defaultPrefix;
   }
+
+  async set(key, value) {
+    return this.database.set(key, value);
+  }
+
+  async get(key) {
+    return this.database.get(key);
+  }
 }
 
 module.exports = Guild;

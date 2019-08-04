@@ -43,7 +43,7 @@ class Bot {
 
       // Execute command if user is authorized in current channel
       if (!message.channel.permissionsFor(message.author).has(command.permissions)) return;
-      command.execute(message, args)
+      return command.execute(message, guild, args)
         .catch(function(e) {
           console.error(e);
           message.reply('there was an error trying to execute that command!');
