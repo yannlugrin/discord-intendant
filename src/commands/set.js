@@ -2,7 +2,7 @@ module.exports = {
   name: 'set',
   description: 'Set guild settings',
   permissions: ['ADMINISTRATOR'],
-  async execute(message, args = []) {
+  async execute(message, settings, args = []) {
     const key = args.shift();
     let value = args.join(' ');
     let computedValue = value;
@@ -17,7 +17,7 @@ module.exports = {
         break;
     }
 
-    return message.settings.guild.set(key, computedValue)
+    return settings.guild.set(key, computedValue)
       .then(function() {
         if (computedValue === undefined) {
           message.reply(`Value of '${key}' is unset`);
