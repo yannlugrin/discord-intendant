@@ -10,3 +10,5 @@ RUN set -ex; \
   yarn cache clean
 
 COPY . ./
+
+CMD ["yarn", "start"]
