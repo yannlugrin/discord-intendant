@@ -1,6 +1,6 @@
 module.exports = {
   name: 'guildMemberAdd',
-  description: 'The guildMemberAdd event runs anytime a new member joins a server',
+  description: 'Send welcome message to member that join Guild server',
   async execute(member) {
     // Ignore joining bot
     if (member.bot) return;
