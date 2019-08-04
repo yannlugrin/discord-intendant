@@ -30,11 +30,15 @@ class Bot {
       if (!message.content.startsWith(options.prefix) || message.author.bot) return;
 
       const args = message.content.slice(options.prefix.length).split(/ +/);
-      const command = args.shift().toLowerCase();
+      const commandName = args.shift().toLowerCase();
 
-      if (!this.commands.has(command)) return;
+      // Ignore command if doesn't exists
+      if (!this.commands.has(commandName)) return;
       try {
-        this.commands.get(command).execute(message, args);
+        const command = this.commands.get(commandName);
+        // Execute command if user is authorized in current channel
+        if (!message.channel.permissionsFor(message.author).has(command.permissions)) return;
+        command.execute(message, args);
       } catch (e) {
         console.error(e);
         message.reply('there was an error trying to execute that command!');
