@@ -3,3 +3,13 @@ services:
   bot:
     build: .
     command: yarn start
+    depends_on:
+      - db
+
+  db:
+    image: redis:alpine
+    volumes:
+      - database:/data
+
+volumes:
+  database:

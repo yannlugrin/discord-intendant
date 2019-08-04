@@ -1,6 +1,7 @@
 const { readdirSync } = require('fs');
 const Discord = require('discord.js');
 const { DefaultOptions } = require('./util/constants');
+const Guild = require('./guild');
 
 /*
  * Bot class
@@ -13,6 +14,7 @@ class Bot {
     this.options = Discord.Util.mergeDefault(DefaultOptions, options);
     this.client = new Discord.Client();
     this.commands = new Discord.Collection();
+    this.guilds = new Discord.Collection();
 
     // Load commands
     const commandFiles = readdirSync('./src/commands');
@@ -25,24 +27,27 @@ class Bot {
       console.info('Bot is Ready!');
     });
 
-    // Catch command messages
-    this.client.on('message', message => {
-      if (!message.content.startsWith(options.prefix) || message.author.bot) return;
+    this.client.on('message', async message => {
+      if (!message.guild) return;
+      const guild = this._loadGuild(message.guild);
+      const prefix = await guild.getPrefix();
 
-      const args = message.content.slice(options.prefix.length).split(/ +/);
+      if (!message.content.startsWith(prefix)) return;
+
+      const args = message.content.slice(prefix.length).split(/ +/);
       const commandName = args.shift().toLowerCase();
 
       // Ignore command if doesn't exists
       if (!this.commands.has(commandName)) return;
-      try {
-        const command = this.commands.get(commandName);
-        // Execute command if user is authorized in current channel
-        if (!message.channel.permissionsFor(message.author).has(command.permissions)) return;
-        command.execute(message, args);
-      } catch (e) {
-        console.error(e);
-        message.reply('there was an error trying to execute that command!');
-      }
+      const command = this.commands.get(commandName);
+
+      // Execute command if user is authorized in current channel
+      if (!message.channel.permissionsFor(message.author).has(command.permissions)) return;
+      command.execute(message, args)
+        .catch(function(e) {
+          console.error(e);
+          message.reply('there was an error trying to execute that command!');
+        });
     });
   }
 
@@ -66,6 +71,17 @@ class Bot {
     } catch (e) {
       console.error(`Unable to load command ${file}: ${e}`);
     }
+  }
+
+  /*
+   *
+   */
+  _loadGuild(guild) {
+    if(!this.guilds.has(guild.id)) {
+      this.guilds.set(guild.id, new Guild(guild.id, this.options));
+    }
+
+    return this.guilds.get(guild.id)
   }
 }
 

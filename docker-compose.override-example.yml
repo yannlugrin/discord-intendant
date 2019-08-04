@@ -3,6 +3,4 @@ services:
   bot:
     environment:
       DISCORD_BOT_TOKEN: "YOUR TOKEN HERE"
-    # Uncomment when coding
-    # volumes:
-    #   - ./src:/var/app/src
+      DATABASE_URL: "redis://user:password@host:6379"

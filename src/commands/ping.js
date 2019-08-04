@@ -2,7 +2,7 @@ module.exports = {
   name: 'ping',
   description: 'Ping!',
   permissions: ['ADMINISTRATOR'],
-  execute(message) {
+  async execute(message) {
     message.channel.send('Pong.');
   }
 };
