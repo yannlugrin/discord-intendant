@@ -1,0 +1,8 @@
+version: '3'
+services:
+  bot:
+    environment:
+      DISCORD_BOT_TOKEN: "YOUR TOKEN HERE"
+    # Uncomment when coding
+    # volumes:
+    #   - ./src:/var/app/src

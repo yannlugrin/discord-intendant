@@ -10,7 +10,9 @@
     "url": "git@github.com:yannlugrin/discord-intendant.git"
   },
   "private": true,
-  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
   "engine": {
     "npm": ">= 10.0.0"
   },
@@ -18,5 +20,6 @@
     "eslint": "^6.1.0"
   },
   "dependencies": {
+    "discord.js": "^11.5.1"
   }
 }
