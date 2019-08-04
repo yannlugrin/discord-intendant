@@ -3,7 +3,7 @@ module.exports = {
   description: 'Set guild settings',
   permissions: ['ADMINISTRATOR'],
   async execute(message, args) {
-    const key = args.shift().toLowerCase();
+    const key = args.shift();
     const value = args.join(' ');
 
     return message.settings.guild.set(key, value)

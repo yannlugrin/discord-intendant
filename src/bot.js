@@ -37,6 +37,40 @@ class Bot {
   }
 
   /*
+   * Return guild settings or default
+   */
+  async getSettings(guild) {
+    const settings = Discord.Util.mergeDefault(this.settings, {});
+
+    if (guild && guild.id) {
+      if(!this.guilds.has(guild.id)) {
+        this.guilds.set(guild.id, new Guild(guild.id, settings));
+      }
+
+      settings.guild = this.guilds.get(guild.id);
+      settings.prefix = await settings.guild.get('prefix') || settings.prefix;
+    }
+
+    return settings
+  }
+
+  /*
+   *
+   */
+  render(template = '', vars = {}) {
+    let result = template;
+
+    if (vars.member) {
+      result = result
+        .replace('{{mention}}', `<@${vars.member.id}>`)
+        .replace('{{nickname}}', vars.member.nickname || vars.member.user.username)
+        .replace('{{tag}}', vars.member.user.tag);
+    }
+
+    return result;
+  }
+
+  /*
    * Load a command file
    */
   _loadCommand(file) {
@@ -64,24 +98,6 @@ class Bot {
     } catch (e) {
       console.error(`Unable to load event ${file}: ${e}`);
     }
-  }
-
-  /*
-   * Return guild settings or default
-   */
-  async getSettings(guild) {
-    const settings = Discord.Util.mergeDefault(this.settings, {});
-
-    if (guild && guild.id) {
-      if(!this.guilds.has(guild.id)) {
-        this.guilds.set(guild.id, new Guild(guild.id, settings));
-      }
-
-      settings.guild = this.guilds.get(guild.id);
-      settings.prefix = await settings.guild.get('prefix') || settings.prefix;
-    }
-
-    return settings
   }
 }
 

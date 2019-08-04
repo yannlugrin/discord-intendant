@@ -8,11 +8,21 @@ class Guild {
   }
 
   async set(key, value) {
-    return this.database.set(key, value);
+    return this.database.set(key.toLowerCase(), value);
   }
 
   async get(key) {
-    return this.database.get(key);
+    return this.database.get(key.toLowerCase());
+  }
+
+  async is(key) {
+    return this.database.get(key.toLowerCase())
+      .then((value) => { return value === 'true' });
+  }
+
+  async not(key) {
+    return this.is(key)
+      .then((value) => { return !value; });
   }
 }
 
