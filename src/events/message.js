@@ -2,9 +2,14 @@ module.exports = {
   name: 'message',
   description: 'The message event runs anytime a message is received',
   async execute(message) {
-    if (!message.guild) return;
-    const guild = this._loadGuild(message.guild);
-    const prefix = await guild.getPrefix();
+    // Ignore any bot message
+    if (message.author.bot) return;
+
+    // Load settings, will use default settings if Guild is not set or don't have
+    // their own settings set.
+    // eslint-disable-next-line require-atomic-updates
+    const settings = message.settings = await this.getSettings(message.guild);
+    const prefix = settings.prefix;
 
     if (!message.content.startsWith(prefix)) return;
 
@@ -17,7 +22,7 @@ module.exports = {
 
     // Execute command if user is authorized in current channel
     if (!message.channel.permissionsFor(message.author).has(command.permissions)) return;
-    return command.execute(message, guild, args)
+    return command.execute(message, args)
       .catch(function(e) {
         console.error(e);
         message.reply('there was an error trying to execute that command!');

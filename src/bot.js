@@ -1,6 +1,6 @@
 const { readdirSync } = require('fs');
 const Discord = require('discord.js');
-const { DefaultOptions } = require('./util/constants');
+const { DefaultSettings } = require('./util/constants');
 const Guild = require('./guild');
 
 /*
@@ -11,7 +11,7 @@ class Bot {
    * Bot class constructor
    */
   constructor(options = {}) {
-    this.options = Discord.Util.mergeDefault(DefaultOptions, options);
+    this.settings = Discord.Util.mergeDefault(DefaultSettings, options);
     this.client = new Discord.Client();
     this.commands = new Discord.Collection();
     this.guilds = new Discord.Collection();
@@ -33,7 +33,7 @@ class Bot {
    * Start the bot
    */
   start() {
-    this.client.login(this.options.token);
+    this.client.login(this.settings.token);
   }
 
   /*
@@ -67,14 +67,21 @@ class Bot {
   }
 
   /*
-   * Return Guild object
+   * Return guild settings or default
    */
-  _loadGuild(guild) {
-    if(!this.guilds.has(guild.id)) {
-      this.guilds.set(guild.id, new Guild(guild.id, this.options));
+  async getSettings(guild) {
+    const settings = Discord.Util.mergeDefault(this.settings, {});
+
+    if (guild && guild.id) {
+      if(!this.guilds.has(guild.id)) {
+        this.guilds.set(guild.id, new Guild(guild.id, settings));
+      }
+
+      settings.guild = this.guilds.get(guild.id);
+      settings.prefix = await settings.guild.get('prefix') || settings.prefix;
     }
 
-    return this.guilds.get(guild.id)
+    return settings
   }
 }
 
