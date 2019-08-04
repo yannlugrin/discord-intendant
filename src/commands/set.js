@@ -2,13 +2,28 @@ module.exports = {
   name: 'set',
   description: 'Set guild settings',
   permissions: ['ADMINISTRATOR'],
-  async execute(message, args) {
+  async execute(message, args = []) {
     const key = args.shift();
-    const value = args.join(' ');
+    let value = args.join(' ');
+    let computedValue = value;
 
-    return message.settings.guild.set(key, value)
+    switch (key) {
+      case 'welcomeChannel':
+        if (args.length > 0 && message.mentions.channels.size !== 1) {
+          message.reply('You must specify exactly one channel');
+          return;
+        }
+        computedValue = args.length === 0 ? undefined : message.mentions.channels.first().id;
+        break;
+    }
+
+    return message.settings.guild.set(key, computedValue)
       .then(function() {
-        message.reply(`Value of '${key}' is set to: ${value}`);
+        if (computedValue === undefined) {
+          message.reply(`Value of '${key}' is unset`);
+        } else {
+          message.reply(`Value of '${key}' is set to: ${value}`);
+        }
       });
   }
 };

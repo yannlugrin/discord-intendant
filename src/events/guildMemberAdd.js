@@ -12,10 +12,15 @@ module.exports = {
     // Do not proceed if welcome message is not enable
     if (await settings.guild.not('welcomeEnabled')) return;
 
-    // Render templates
-    const welcomeDirectMessage = this.render(await settings.guild.get('welcomeDirectMessage'), { member: member });
-    if (welcomeDirectMessage.length === 0) return;
+    // Send message
+    const welcomeMessage = this.render(await settings.guild.get('welcomeMessage'), { member: member });
+    const welcomeChannel = await settings.guild.get('welcomeChannel').then( (channelID => {
+      return member.guild.channels.find(c => c.id === channelID) || member;
+    }));
 
-    return member.send(welcomeDirectMessage);
+    if (welcomeMessage.length === 0) return;
+
+    return welcomeChannel.send(welcomeMessage)
+      .catch(console.error);
   }
 }
