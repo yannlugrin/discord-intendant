@@ -22,33 +22,11 @@ class Bot {
       this._loadCommand(file);
     }
 
-    // Log when bot is ready
-    this.client.once('ready', () => {
-      console.info('Bot is Ready!');
-    });
-
-    this.client.on('message', async message => {
-      if (!message.guild) return;
-      const guild = this._loadGuild(message.guild);
-      const prefix = await guild.getPrefix();
-
-      if (!message.content.startsWith(prefix)) return;
-
-      const args = message.content.slice(prefix.length).split(/ +/);
-      const commandName = args.shift().toLowerCase();
-
-      // Ignore command if doesn't exists
-      if (!this.commands.has(commandName)) return;
-      const command = this.commands.get(commandName);
-
-      // Execute command if user is authorized in current channel
-      if (!message.channel.permissionsFor(message.author).has(command.permissions)) return;
-      return command.execute(message, guild, args)
-        .catch(function(e) {
-          console.error(e);
-          message.reply('there was an error trying to execute that command!');
-        });
-    });
+    // Load events
+    const eventFiles = readdirSync('./src/events');
+    for (const file of eventFiles) {
+      this._loadEvent(file);
+    }
   }
 
   /*
@@ -74,7 +52,22 @@ class Bot {
   }
 
   /*
-   *
+   * Load a event file
+   */
+  _loadEvent(file) {
+    if (!file.endsWith(".js")) return;
+
+    try {
+      console.info(`Loading Event: ${file}`);
+      const event = require(`./events/${file}`);
+      this.client.on(event.name, event.execute.bind(this));
+    } catch (e) {
+      console.error(`Unable to load event ${file}: ${e}`);
+    }
+  }
+
+  /*
+   * Return Guild object
    */
   _loadGuild(guild) {
     if(!this.guilds.has(guild.id)) {
