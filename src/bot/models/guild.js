@@ -16,6 +16,10 @@ class Guild {
   async get(key) {
     return this._database.get(key);
   }
+
+  async has(key) {
+    return await this._database.get(key) !== undefined;
+  }
 }
 
 module.exports = Guild;

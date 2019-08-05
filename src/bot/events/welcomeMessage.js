@@ -1,6 +1,6 @@
 module.exports = {
   settings: [
-    { key: 'welcomeEnabled', type: 'Boolean', permissions: ['ADMINISTRATOR'], defaultValue: false },
+    { key: 'welcomeEnabled', type: 'Boolean', permissions: ['ADMINISTRATOR'], default: false },
     { key: 'welcomeChannel', type: 'Channel', permissions: ['ADMINISTRATOR'] },
     { key: 'welcomeMessage', type: 'String', permissions: ['ADMINISTRATOR'] },
   ],

@@ -29,21 +29,35 @@ class Settings extends Collection {
   }
 
   async set(key, ...args) {
+    // To restore values on clone, super in constructor is called before definitions is set
     if (!this._definitions) return super.set(key, args[0]);
-    if (!this._definitions.has(key)) throw new UnauthorizedError(`Set '${key}' setting is forbidden!`);
+
+    const definition = this.definitions.get(key);
+    if (!definition) throw new UnauthorizedError(`Set '${key}' setting is forbidden!`);
+
+    // Setting set without message is internal, so internal are authoritzed. Otherwise
+    // check permissions of message author.
+    const message = (args[0] instanceof Discord.Message) ? args.shift() : undefined;
+    if (message && (definition.internal || !message.channel.permissionsFor(message.author).has(this._definitions.get(key).permissions))) {
+      throw new UnauthorizedError(`Set '${key}' setting is forbidden!`);
+    }
 
     const computedValue = await this.compute(key, ...args);
 
     await this.guild.set(key, computedValue);
-    return super.has(key) ? super.set(key, computedValue) : this;
+    return super.has(key) || definition.cached ? super.set(key, computedValue) : this;
   }
 
   async get(key) {
     if (!this.guild || !this.definitions.has(key)) return super.get(key);
 
     return this.guild.get(key).then ((value) => {
-      return value ? value : (super.get(key) || this.definitions.get(key).defaultValue);
+      return value ? value : (super.get(key) || this.definitions.get(key).default);
     });
+  }
+
+  async has(key) {
+    return super.has(key) || this.guild.has(key);
   }
 
   async is(key) {
@@ -59,8 +73,6 @@ class Settings extends Collection {
   async compute(key, ...args) {
     const message = (args[0] instanceof Discord.Message) ? args.shift() : undefined;
     const definition = this.definitions.get(key);
-
-    if (message && !message.channel.permissionsFor(message.author).has(definition.permissions)) throw new UnauthorizedError('Not authorized');
 
     switch (definition.type) {
       // Boolean type
@@ -126,7 +138,9 @@ class SettingsDefinition extends Collection {
   set(key, values) {
     const type = values.type;
     const permissions = values.permissions.sort();
-    const defaultValue = values.defaultValue;
+    const internal = values.internal || false;
+    const defaultValue = values.default;
+    const cached = values.cached || false;
 
     if (this.has(key)) {
       const actual = this.get(key);
@@ -136,7 +150,13 @@ class SettingsDefinition extends Collection {
       }
     }
 
-    return super.set(key, { type: type, permissions: permissions.sort(), defaultValue: defaultValue });
+    return super.set(key, {
+      type: type,
+      permissions: permissions,
+      default: defaultValue,
+      internal: internal,
+      cached: cached,
+    });
   }
 
   get(key) {
