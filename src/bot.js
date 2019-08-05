@@ -1,7 +1,7 @@
 const { readdirSync } = require('fs');
 const Discord = require('discord.js');
-const Guild = require('./guild');
-const Settings = require('./settings');
+const Guild = require('./bot/models/guild');
+const Settings = require('./bot/models/settings');
 const { DefaultSettings } = require('./util/constants');
 
 /*
@@ -19,13 +19,13 @@ class Bot {
     this.guilds = new Discord.Collection();
 
     // Load commands
-    const commandFiles = readdirSync('./src/commands');
+    const commandFiles = readdirSync('./src/bot/commands');
     for (const file of commandFiles) {
       this._loadCommand(file);
     }
 
     // Load events
-    const eventFiles = readdirSync('./src/events');
+    const eventFiles = readdirSync('./src/bot/events');
     for (const file of eventFiles) {
       this._loadEvent(file);
     }
@@ -74,7 +74,7 @@ class Bot {
 
     try {
       console.info(`Loading Command: ${file}`);
-      const command = require(`./commands/${file}`);
+      const command = require(`./bot/commands/${file}`);
       for (const setting of command.settings || []) {
         this.settings.definitions.set(setting.key, setting);
       }
@@ -92,7 +92,7 @@ class Bot {
 
     try {
       console.info(`Loading Event: ${file}`);
-      const event = require(`./events/${file}`);
+      const event = require(`./bot/events/${file}`);
       for (const setting of event.settings || []) {
         this.settings.definitions.set(setting.key, setting);
       }
