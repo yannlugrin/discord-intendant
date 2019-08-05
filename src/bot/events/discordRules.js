@@ -4,7 +4,7 @@ module.exports = {
   settings: [
     { key: 'discordRulesEnabled', type: Boolean, permissions: ['ADMINISTRATOR'], defaultValue: false },
     { key: 'discordRulesMessage', type: String, permissions: ['ADMINISTRATOR'] },
-    { key: 'discordRulesEmoji', type: String, permissions: ['ADMINISTRATOR'] },
+    { key: 'discordRulesReaction', type: String, permissions: ['ADMINISTRATOR'] },
     { key: 'discordRulesPromote', type: 'Role', permissions: ['ADMINISTRATOR'] },
   ],
   async execute(reaction, user) {
@@ -18,7 +18,7 @@ module.exports = {
     // Do not proceed if Discord rules are not enable, it's not right message or right emoji
     if (await settings.not('discordRulesEnabled')) return;
     if (reaction.message.id !== await settings.get('discordRulesMessage')) return;
-    if (emoji !== await settings.get('discordRulesEmoji')) return;
+    if (emoji !== await settings.get('discordRulesReaction')) return;
 
     return reaction.message.guild.fetchMember(user)
       .then(async (member) => {
