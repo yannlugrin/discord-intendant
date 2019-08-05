@@ -13,6 +13,8 @@ module.exports = {
         switch (settings.definitions.get(key).type) {
           case 'Channel':
             return message.reply(`Value of '${key}' is set to: <#${value}>`);
+          case 'Role':
+            return message.reply(`Value of '${key}' is set to: ${message.guild.roles.find((role) => role.id === value).name}`);
           default:
             return message.reply(`Value of '${key}' is set to: ${value}`);
         }

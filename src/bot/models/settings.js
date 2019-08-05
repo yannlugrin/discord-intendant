@@ -72,11 +72,26 @@ class Settings extends Collection {
 
       // Channel type
       case 'Channel':
-        if (!message) throw `Message required to set "{key}" setting`;
+        if (!message) throw `Message required to set "${key}" setting`;
         if (args.length > 0 && message.mentions.channels.size !== 1) {
           throw('You must specify exactly one channel');
         }
         return args.length === 1 ? message.mentions.channels.first().id : undefined;
+
+      // Role type
+      case 'Role':
+        if (args.length === 0) return undefined;
+
+        if (!message) throw `Message required to set "${key}" setting`;
+        if (args.length > 1) {
+          throw('You must specify exactly one role');
+        }
+
+        try {
+          return message.guild.roles.find((role) => role.name === args[0]).id;
+        } catch {
+          throw('You must specify an existing role');
+        }
 
       // Default type, like String
       default:
