@@ -15,11 +15,11 @@ module.exports = {
     const settings = await this.getSettings(member.guild);
 
     // Do not proceed if welcome message is not enable
-    if (await settings.guild.not('welcomeEnabled')) return;
+    if (await settings.not('welcomeEnabled')) return;
 
     // Send message
-    const welcomeMessage = this.render(await settings.guild.get('welcomeMessage'), { member: member });
-    const welcomeChannel = await settings.guild.get('welcomeChannel').then( (channelID => {
+    const welcomeMessage = this.render(await settings.get('welcomeMessage'), { member: member });
+    const welcomeChannel = await settings.get('welcomeChannel').then( (channelID => {
       return member.guild.channels.find(c => c.id === channelID) || member;
     }));
 

@@ -16,16 +16,6 @@ class Guild {
   async get(key) {
     return this._database.get(key);
   }
-
-  async is(key) {
-    return this.get(key)
-      .then((value) => { return value === 'true' });
-  }
-
-  async not(key) {
-    return this.is(key)
-      .then((value) => { return !value; });
-  }
 }
 
 module.exports = Guild;

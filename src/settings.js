@@ -1,4 +1,5 @@
 const { Collection } = require('discord.js');
+const Discord = require('discord.js');
 
 /*
  *
@@ -20,12 +21,14 @@ class Settings extends Collection {
     return this._definitions;
   }
 
-  async set(key, value) {
-    if (!this._definitions) return super.set(key, value);
+  async set(key, ...args) {
+    if (!this._definitions) return super.set(key, args[0]);
     if (!this._definitions.has(key)) throw `Set '${key}' setting is forbidden!`;
 
-    await this.guild.set(key, value);
-    return super.has(key) ? super.set(key, value) : this;
+    const computedValue = await this.compute(key, ...args);
+
+    await this.guild.set(key, computedValue);
+    return super.has(key) ? super.set(key, computedValue) : this;
   }
 
   async get(key) {
@@ -34,6 +37,45 @@ class Settings extends Collection {
     return this.guild.get(key).then ((value) => {
       return value ? value : (super.get(key) || this.definitions.get(key).defaultValue);
     });
+  }
+
+  async is(key) {
+    return this.get(key)
+      .then((value) => { return value === true });
+  }
+
+  async not(key) {
+    return this.is(key)
+      .then((value) => { return !value; });
+  }
+
+  async compute(key, ...args) {
+    const message = (args[0] instanceof Discord.Message) ? args.shift() : undefined;
+    const definition = this.definitions.get(key);
+
+    switch (definition.type) {
+      // Boolean type
+      case Boolean:
+        if (args.length === 0) return undefined;
+
+        if (!/^(true|false)$/.test(args[0]) && message) {
+          throw('You must use values true or false. No value is also valid.');
+        }
+
+        return args[0] === 'true' ? true : false;
+
+      // Channel type
+      case 'Channel':
+        if (!message) throw `Message required to set "{key}" setting`;
+        if (args.length > 0 && message.mentions.channels.size !== 1) {
+          throw('You must specify exactly one channel');
+        }
+        return args.length === 1 ? message.mentions.channels.first().id : undefined;
+
+      // Default type, like String
+      default:
+        return args.length > 0 ? args.join(' ') : undefined
+    }
   }
 }
 
