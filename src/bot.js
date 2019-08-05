@@ -136,7 +136,10 @@ class Bot {
       }
       for (const listener of event.listeners) {
         console.info(` - listener (${listener.name}): ${listener.description}`);
-        this.client.on(listener.name, listener.execute.bind(this));
+        this.client.on(listener.name, (...args) => {
+          listener.execute.call(this, ...args)
+            .catch(console.error);
+        });
       }
     } catch (e) {
       console.error(`Unable to load event ${file}: ${e.stack}`);
