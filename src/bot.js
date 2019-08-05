@@ -63,7 +63,7 @@ class Bot {
           this.client.emit('messageReactionRemove', reaction, this.client.users.get(packet.d.user_id));
         }
       });
-});
+    });
   }
 
   /*
@@ -108,9 +108,11 @@ class Bot {
     if (!file.endsWith(".js")) return;
 
     try {
-      console.info(`Loading Command: ${file}`);
+      console.info(`Loading command: ${file.split('.').slice(0, -1).join('.')}`);
       const command = require(`./bot/commands/${file}`);
+      console.info(` ${command.description}`);
       for (const setting of command.settings || []) {
+        console.info(` - setting: ${setting.key} (${setting.type})`);
         this.settings.definitions.set(setting.key, setting);
       }
       this.commands.set(command.name, command);
@@ -126,12 +128,16 @@ class Bot {
     if (!file.endsWith(".js")) return;
 
     try {
-      console.info(`Loading Event: ${file}`);
+      console.info(`Loading event: ${file.split('.').slice(0, -1).join('.')}`);
       const event = require(`./bot/events/${file}`);
       for (const setting of event.settings || []) {
+        console.info(` - setting: ${setting.key} (${setting.type})`);
         this.settings.definitions.set(setting.key, setting);
       }
-      this.client.on(event.name, event.execute.bind(this));
+      for (const listener of event.listeners) {
+        console.info(` - listener (${listener.name}): ${listener.description}`);
+        this.client.on(listener.name, listener.execute.bind(this));
+      }
     } catch (e) {
       console.error(`Unable to load event ${file}: ${e}`);
     }
