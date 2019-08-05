@@ -15,10 +15,15 @@ module.exports = {
         }
         computedValue = args.length === 0 ? undefined : message.mentions.channels.first().id;
         break;
+      default:
+        if (computedValue === '') {
+          computedValue = undefined;
+        }
+        break;
     }
 
-    return settings.guild.set(key, computedValue)
-      .then(function() {
+    return settings.set(key, computedValue)
+      .then(() => {
         if (computedValue === undefined) {
           message.reply(`Value of '${key}' is unset`);
         } else {

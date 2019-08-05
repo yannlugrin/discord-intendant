@@ -1,7 +1,8 @@
 const { readdirSync } = require('fs');
 const Discord = require('discord.js');
-const { DefaultSettings } = require('./util/constants');
 const Guild = require('./guild');
+const Settings = require('./settings');
+const { DefaultSettings } = require('./util/constants');
 
 /*
  * Bot class
@@ -10,8 +11,9 @@ class Bot {
   /*
    * Bot class constructor
    */
-  constructor(options = {}) {
-    this.settings = Discord.Util.mergeDefault(DefaultSettings, options);
+  constructor() {
+    this.settings = new Settings(DefaultSettings);
+
     this.client = new Discord.Client();
     this.commands = new Discord.Collection();
     this.guilds = new Discord.Collection();
@@ -32,26 +34,20 @@ class Bot {
   /*
    * Start the bot
    */
-  start() {
-    this.client.login(this.settings.token);
+  async start() {
+    return this.client.login(await this.settings.get('token'));
   }
 
   /*
    * Return guild settings or default
    */
   async getSettings(guild) {
-    const settings = Discord.Util.mergeDefault(this.settings, {});
+    if (!guild || !guild.id) return this.settings
 
-    if (guild && guild.id) {
-      if(!this.guilds.has(guild.id)) {
-        this.guilds.set(guild.id, new Guild(guild.id, settings));
-      }
-
-      settings.guild = this.guilds.get(guild.id);
-      settings.prefix = await settings.guild.get('prefix') || settings.prefix;
+    if(!this.guilds.has(guild.id)) {
+      this.guilds.set(guild.id, new Guild(guild.id, this.settings));
     }
-
-    return settings
+    return this.guilds.get(guild.id).settings;
   }
 
   /*
@@ -79,6 +75,9 @@ class Bot {
     try {
       console.info(`Loading Command: ${file}`);
       const command = require(`./commands/${file}`);
+      for (const setting of command.settings || []) {
+        this.settings.definitions.set(setting.key, setting);
+      }
       this.commands.set(command.name, command);
     } catch (e) {
       console.error(`Unable to load command ${file}: ${e}`);
@@ -94,6 +93,9 @@ class Bot {
     try {
       console.info(`Loading Event: ${file}`);
       const event = require(`./events/${file}`);
+      for (const setting of event.settings || []) {
+        this.settings.definitions.set(setting.key, setting);
+      }
       this.client.on(event.name, event.execute.bind(this));
     } catch (e) {
       console.error(`Unable to load event ${file}: ${e}`);

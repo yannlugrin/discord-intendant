@@ -1,6 +1,11 @@
 module.exports = {
   name: 'guildMemberAdd',
   description: 'Send welcome message to member that join Guild server',
+  settings: [
+    { key: 'welcomeEnabled', type: Boolean, permissions: ['ADMINISTRATOR'], defaultValue: false },
+    { key: 'welcomeChannel', type: 'Channel', permissions: ['ADMINISTRATOR'] },
+    { key: 'welcomeMessage', type: String, permissions: ['ADMINISTRATOR'] },
+  ],
   async execute(member) {
     // Ignore joining bot
     if (member.bot) return;

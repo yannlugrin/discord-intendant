@@ -1,22 +1,24 @@
 const Keyv = require('keyv');
 
 class Guild {
-  constructor(id, options = {}) {
-    this.options = options;
-    this.id = id;
-    this.database = new Keyv(this.options.databaseURL, { namespace: this.id });
+  constructor(id, settings) {
+    Object.defineProperty(this, 'id', { value: id });
+    Object.defineProperty(this, 'settings', { value: settings.clone() });
+    Object.defineProperty(this, '_database', { value: new Keyv(settings.databaseURL, { namespace: id }) });
+
+    this.settings.guild = this;
   }
 
   async set(key, value) {
-    return this.database.set(key.toLowerCase(), value);
+    return this._database.set(key, value);
   }
 
   async get(key) {
-    return this.database.get(key.toLowerCase());
+    return this._database.get(key);
   }
 
   async is(key) {
-    return this.database.get(key.toLowerCase())
+    return this.get(key)
       .then((value) => { return value === 'true' });
   }
 
