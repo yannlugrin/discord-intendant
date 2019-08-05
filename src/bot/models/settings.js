@@ -1,6 +1,6 @@
 const { Collection } = require('discord.js');
 const Discord = require('discord.js');
-const { UnauthorizedError, RuntimeError, NotImplemented } = require('../../util/constants');
+const { UnauthorizedError, RuntimeError, NotImplemented } = require('constants');
 
 class SettingError extends RuntimeError {}
 

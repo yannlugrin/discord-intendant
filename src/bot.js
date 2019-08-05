@@ -1,8 +1,8 @@
 const { readdirSync } = require('fs');
 const Discord = require('discord.js');
-const Guild = require('./bot/models/guild');
-const Settings = require('./bot/models/settings');
-const { DefaultSettings } = require('./util/constants');
+const Guild = require('bot/models/guild');
+const Settings = require('bot/models/settings');
+const { DefaultSettings } = require('constants');
 
 /*
  * Bot class

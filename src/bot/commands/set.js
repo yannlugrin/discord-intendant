@@ -1,4 +1,4 @@
-const { RuntimeError } = require('../../util/constants');
+const { RuntimeError } = require('constants');
 
 module.exports = {
   name: 'set',
