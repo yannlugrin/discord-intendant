@@ -117,7 +117,7 @@ class Bot {
       }
       this.commands.set(command.name, command);
     } catch (e) {
-      console.error(`Unable to load command ${file}: ${e}`);
+      console.error(`Unable to load command ${file}: ${e.stack}`);
     }
   }
 
@@ -139,7 +139,7 @@ class Bot {
         this.client.on(listener.name, listener.execute.bind(this));
       }
     } catch (e) {
-      console.error(`Unable to load event ${file}: ${e}`);
+      console.error(`Unable to load event ${file}: ${e.stack}`);
     }
   }
 }

@@ -1,8 +1,8 @@
 module.exports = {
   settings: [
-    { key: 'discordRulesEnabled', type: Boolean, permissions: ['ADMINISTRATOR'], defaultValue: false },
-    { key: 'discordRulesMessage', type: String, permissions: ['ADMINISTRATOR'] },
-    { key: 'discordRulesReaction', type: String, permissions: ['ADMINISTRATOR'] },
+    { key: 'discordRulesEnabled', type: 'Boolean', permissions: ['ADMINISTRATOR'], defaultValue: false },
+    { key: 'discordRulesMessage', type: 'String', permissions: ['ADMINISTRATOR'] },
+    { key: 'discordRulesReaction', type: 'String', permissions: ['ADMINISTRATOR'] },
     { key: 'discordRulesPromote', type: 'Role', permissions: ['ADMINISTRATOR'] },
   ],
   listeners: [

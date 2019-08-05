@@ -1,3 +1,5 @@
+const { RuntimeError } = require('../../util/constants');
+
 module.exports = {
   name: 'set',
   description: 'Set guild settings',
@@ -19,8 +21,11 @@ module.exports = {
             return message.reply(`Value of '${key}' is set to: ${value}`);
         }
       })
-      .catch((e) => {
-        message.reply(e);
+      .catch((error) => {
+        if (error instanceof RuntimeError) {
+          return message.reply(error.message);
+        }
+        console.error(error);
       });
   }
 };

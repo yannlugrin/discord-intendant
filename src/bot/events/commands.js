@@ -1,6 +1,6 @@
 module.exports = {
   settings: [
-    { key: 'prefix', type: String, permissions: ['ADMINISTRATOR'], defaultValue: '!' },
+    { key: 'prefix', type: 'String', permissions: ['ADMINISTRATOR'], defaultValue: '!' },
   ],
   listeners: [
     {
