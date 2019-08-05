@@ -77,7 +77,7 @@ class Bot {
    * Return guild settings or default
    */
   async getSettings(guild) {
-    if (!guild || !guild.id) return this.settings
+    if (!guild || !guild.id) return this.settings;
 
     if(!this.guilds.has(guild.id)) {
       this.guilds.set(guild.id, new Guild(guild.id, this.settings));

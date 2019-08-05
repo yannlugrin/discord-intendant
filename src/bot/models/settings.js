@@ -53,7 +53,7 @@ class Settings extends Collection {
 
   async not(key) {
     return this.is(key)
-      .then((value) => { return !value; });
+      .then((value) => { return !value });
   }
 
   async compute(key, ...args) {
@@ -104,7 +104,7 @@ class Settings extends Collection {
 
       // Default type, like String
       default:
-        return args.length > 0 ? args.join(' ') : undefined
+        return args.length > 0 ? args.join(' ') : undefined;
     }
   }
 }

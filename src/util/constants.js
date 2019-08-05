@@ -5,10 +5,10 @@ const DefaultSettings = {
 
   [Symbol.iterator]: function * () {
     for (const key in this) {
-      yield [key, this[key]]
+      yield [key, this[key]];
     }
   }
-}
+};
 
 class NotImplemented extends Error {}
 class RuntimeError extends Error {}
@@ -19,4 +19,4 @@ module.exports = {
   NotImplemented: NotImplemented,
   UnauthorizedError: UnauthorizedError,
   RuntimeError: RuntimeError,
-}
+};
