@@ -21,6 +21,10 @@ class Settings extends Collection {
     return this._definitions;
   }
 
+  get databaseURL() {
+    return super.get('databaseURL');
+  }
+
   async set(key, ...args) {
     if (!this._definitions) return super.set(key, args[0]);
     if (!this._definitions.has(key)) throw `Set '${key}' setting is forbidden!`;
