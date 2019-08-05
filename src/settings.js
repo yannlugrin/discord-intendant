@@ -53,6 +53,8 @@ class Settings extends Collection {
     const message = (args[0] instanceof Discord.Message) ? args.shift() : undefined;
     const definition = this.definitions.get(key);
 
+    if (message && !message.channel.permissionsFor(message.author).has(definition.permissions)) throw 'Not authorized';
+
     switch (definition.type) {
       // Boolean type
       case Boolean:

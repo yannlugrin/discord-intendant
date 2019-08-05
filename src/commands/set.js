@@ -1,7 +1,7 @@
 module.exports = {
   name: 'set',
   description: 'Set guild settings',
-  permissions: ['ADMINISTRATOR'],
+  permissions: [],
   async execute(message, settings, args = []) {
     const key = args.shift();
 

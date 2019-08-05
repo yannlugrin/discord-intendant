@@ -23,7 +23,7 @@ module.exports = {
     const command = this.commands.get(commandName);
 
     // Execute command if user is authorized in current channel
-    if (!message.channel.permissionsFor(message.author).has(command.permissions)) return;
+    if (command.permissions && !message.channel.permissionsFor(message.author).has(command.permissions)) return;
     return command.execute(message, settings, args)
       .catch((e) => {
         console.error(e);
