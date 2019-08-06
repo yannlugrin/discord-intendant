@@ -41,7 +41,7 @@ class Settings extends Collection {
     }
 
     // Validate then set the value
-    await definition.validate(key, message, ...args);
+    await definition.validate.call(this, key, message, ...args);
 
     return definition.compute.call(this, key, message, ...args)
       .then(async (computedValue) => {
