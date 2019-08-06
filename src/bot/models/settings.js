@@ -40,10 +40,14 @@ class Settings extends Collection {
       throw new UnauthorizedError(`Set '${key}' setting is forbidden!`);
     }
 
-    const computedValue = await this.compute(key, message, ...args);
+    // Validate then set the value
+    await definition.validate(key, message, ...args);
 
-    await this.guild.set(key, computedValue);
-    return super.has(key) ? super.set(key, computedValue) : this;
+    return definition.compute.call(this, key, message, ...args)
+      .then(async (computedValue) => {
+        await this.guild.set(key, computedValue);
+        return super.has(key) ? super.set(key, computedValue) : this;
+      });
   }
 
   async get(key, ...args) {
@@ -77,10 +81,6 @@ class Settings extends Collection {
     return this.is(key)
       .then((value) => { return !value });
   }
-
-  async compute(key, ...args) {
-    return this.definitions.get(key).compute.call(this, key, ...args);
-  }
 }
 
 /*
@@ -111,7 +111,7 @@ class SettingsDefinition extends Collection {
       }
     }
 
-    const { formatted, compute } = require(`bot/settings/${type}.js`);
+    const { formatted, compute, validate } = require(`bot/settings/${type}.js`);
 
     return super.set(key, {
       type: type,
@@ -120,6 +120,7 @@ class SettingsDefinition extends Collection {
       internal: internal,
       formatted: formatted,
       compute: compute,
+      validate: validate,
     });
   }
 

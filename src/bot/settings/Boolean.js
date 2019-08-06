@@ -3,18 +3,20 @@ const { SettingError } = require('constants');
 
 module.exports = {
   name: 'Boolean',
+
   async formatted(key) {
     return this.get(key);
   },
-  async compute(key, ...args) {
-    const message = (args[0] instanceof Discord.Message) ? args.shift() : undefined;
 
-    if (args.length === 0) return undefined;
+  async compute(key, message, ...args) {
+    return (args.length === 1) ? args[0] === 'true' : undefined;
+  },
 
-    if (message && !/^(true|false)$/.test(args[0])) {
+  async validate(key, ...args) {
+    if (args[0] instanceof Discord.Message) args.shift();
+
+    if (args.length !== 0 && !/^(true|false)$/.test(args[0])) {
       throw new SettingError('Value must be equal to true, false or be empty');
     }
-
-    return args[0] === 'true' ? true : false;
   }
 };
