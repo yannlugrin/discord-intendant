@@ -1,8 +1,6 @@
 const { Collection } = require('discord.js');
 const Discord = require('discord.js');
-const { UnauthorizedError, RuntimeError, NotImplemented } = require('constants');
-
-class SettingError extends RuntimeError {}
+const { UnauthorizedError, RuntimeError } = require('constants');
 
 /*
  *
@@ -42,7 +40,7 @@ class Settings extends Collection {
       throw new UnauthorizedError(`Set '${key}' setting is forbidden!`);
     }
 
-    const computedValue = await this.compute(key, ...args);
+    const computedValue = await this.compute(key, message, ...args);
 
     await this.guild.set(key, computedValue);
     return super.has(key) || definition.cached ? super.set(key, computedValue) : this;
@@ -63,19 +61,7 @@ class Settings extends Collection {
   }
 
   async formatted(key, ...args) {
-    const value = await this.get(key, ...args);
-    const message = (args[0] instanceof Discord.Message) ? args.shift() : undefined;
-
-    if (value === undefined) return undefined;
-
-    switch (this.definitions.get(key).type) {
-      case 'Channel':
-        return `<#${value}>`;
-      case 'Role':
-        return message.guild.roles.find((role) => role.id === value).name;
-      default:
-        return value;
-    }
+    return this.definitions.get(key).formatted.call(this, key, ...args);
   }
 
   async has(key) {
@@ -93,53 +79,7 @@ class Settings extends Collection {
   }
 
   async compute(key, ...args) {
-    const message = (args[0] instanceof Discord.Message) ? args.shift() : undefined;
-    const definition = this.definitions.get(key);
-
-    switch (definition.type) {
-      // Boolean type
-      case 'Boolean':
-        if (args.length === 0) return undefined;
-
-        if (!/^(true|false)$/.test(args[0]) && message) {
-          throw new SettingError('Value must be equal to true, false or be empty');
-        }
-
-        return args[0] === 'true' ? true : false;
-
-      // Channel type
-      case 'Channel':
-        if (!message) throw new NotImplemented(`Message required to set "${key}" setting`);
-        if (args.length > 0 && message.mentions.channels.size !== 1) {
-          throw new SettingError('Value must be equal to exactly one channel or be empty');
-        }
-        return args.length === 1 ? message.mentions.channels.first().id : undefined;
-
-      // Role type
-      case 'Role':
-        if (args.length === 0) return undefined;
-
-        if (!message) throw new NotImplemented(`Message required to set "${key}" setting`);
-        if (args.length > 1) {
-          throw new SettingError('Value must be equal to exactly one role or be empty');
-        }
-
-        try {
-          return message.guild.roles.find((role) => role.name === args[0]).id;
-        } catch(error) {
-          if (error instanceof TypeError) {
-            throw new SettingError('Value must be equal to an existing role name');
-          } else {
-            console.error(error);
-          }
-        }
-
-        break;
-
-      // Default type, like String
-      default:
-        return args.length > 0 ? args.join(' ') : undefined;
-    }
+    return this.definitions.get(key).compute.call(this, key, ...args);
   }
 }
 
@@ -172,12 +112,16 @@ class SettingsDefinition extends Collection {
       }
     }
 
+    const { formatted, compute } = require(`bot/settings/${type}.js`);
+
     return super.set(key, {
       type: type,
       permissions: permissions,
       default: defaultValue,
       internal: internal,
       cached: cached,
+      formatted: formatted,
+      compute: compute,
     });
   }
 

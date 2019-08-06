@@ -12,11 +12,13 @@ const DefaultSettings = {
 
 class NotImplemented extends Error {}
 class RuntimeError extends Error {}
+class SettingError extends RuntimeError {}
 class UnauthorizedError extends RuntimeError {}
 
 module.exports = {
   DefaultSettings: DefaultSettings,
   NotImplemented: NotImplemented,
-  UnauthorizedError: UnauthorizedError,
   RuntimeError: RuntimeError,
+  SettingError: SettingError,
+  UnauthorizedError: UnauthorizedError,
 };
