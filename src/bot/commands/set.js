@@ -9,17 +9,11 @@ module.exports = {
 
     return settings.set(key, message, ...args)
       .then(async () => {
-        const value = await settings.get(key);
-        if (value === undefined) return message.reply(`Value of '${key}' is unset`);
-
-        switch (settings.definitions.get(key).type) {
-          case 'Channel':
-            return message.reply(`Value of '${key}' is set to: <#${value}>`);
-          case 'Role':
-            return message.reply(`Value of '${key}' is set to: ${message.guild.roles.find((role) => role.id === value).name}`);
-          default:
-            return message.reply(`Value of '${key}' is set to: ${value}`);
+        const value = await settings.formatted(key);
+        if (value === undefined) {
+          return message.reply(`Value of '${key}' is unset`);
         }
+        return message.reply(`Value of '${key}' is set to: ${value}`);
       })
       .catch((error) => {
         if (error instanceof RuntimeError) {

@@ -36,7 +36,7 @@ class Settings extends Collection {
     if (!definition) throw new UnauthorizedError(`Set '${key}' setting is forbidden!`);
 
     // Setting set without message is internal, so internal are authoritzed. Otherwise
-    // check permissions of message author.
+    // check permissions of message author
     const message = (args[0] instanceof Discord.Message) ? args.shift() : undefined;
     if (message && (definition.internal || !message.channel.permissionsFor(message.author).has(this._definitions.get(key).permissions))) {
       throw new UnauthorizedError(`Set '${key}' setting is forbidden!`);
@@ -48,12 +48,34 @@ class Settings extends Collection {
     return super.has(key) || definition.cached ? super.set(key, computedValue) : this;
   }
 
-  async get(key) {
+  async get(key, ...args) {
     if (!this.guild || !this.definitions.has(key)) return super.get(key);
+
+    // Check permissions of message author
+    const message = (args[0] instanceof Discord.Message) ? args.shift() : undefined;
+    if (message && !message.channel.permissionsFor(message.author).has(this._definitions.get(key).permissions)) {
+      throw new UnauthorizedError(`Get '${key}' setting is forbidden!`);
+    }
 
     return this.guild.get(key).then ((value) => {
       return value ? value : (super.get(key) || this.definitions.get(key).default);
     });
+  }
+
+  async formatted(key, ...args) {
+    const value = await this.get(key, ...args);
+    const message = (args[0] instanceof Discord.Message) ? args.shift() : undefined;
+
+    if (value === undefined) return undefined;
+
+    switch (this.definitions.get(key).type) {
+      case 'Channel':
+        return `<#${value}>`;
+      case 'Role':
+        return message.guild.roles.find((role) => role.id === value).name;
+      default:
+        return value;
+    }
   }
 
   async has(key) {
