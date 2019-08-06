@@ -9,7 +9,7 @@ module.exports = {
 
     return settings.set(key, message, ...args)
       .then(async () => {
-        const value = await settings.formatted(key);
+        const value = await settings.formatted(key, message);
         if (value === undefined) {
           return message.reply(`Value of '${key}' is unset`);
         }
