@@ -43,7 +43,7 @@ class Settings extends Collection {
     const computedValue = await this.compute(key, message, ...args);
 
     await this.guild.set(key, computedValue);
-    return super.has(key) || definition.cached ? super.set(key, computedValue) : this;
+    return super.has(key) ? super.set(key, computedValue) : this;
   }
 
   async get(key, ...args) {
@@ -102,7 +102,6 @@ class SettingsDefinition extends Collection {
     const permissions = values.permissions.sort();
     const internal = values.internal || false;
     const defaultValue = values.default;
-    const cached = values.cached || false;
 
     if (this.has(key)) {
       const actual = this.get(key);
@@ -119,7 +118,6 @@ class SettingsDefinition extends Collection {
       permissions: permissions,
       default: defaultValue,
       internal: internal,
-      cached: cached,
       formatted: formatted,
       compute: compute,
     });
