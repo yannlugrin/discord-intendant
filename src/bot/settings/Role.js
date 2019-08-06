@@ -7,7 +7,7 @@ module.exports = {
     const value = await this.get(key);
     const message = (args[0] instanceof Discord.Message) ? args.shift() : undefined;
 
-    return message.guild.roles.find((role) => role.id === value).name;
+    return value ? message.guild.roles.find((role) => role.id === value).name : undefined;
   },
   async compute(key, ...args) {
     const message = (args[0] instanceof Discord.Message) ? args.shift() : undefined;
