@@ -4,7 +4,7 @@ class Guild {
   constructor(id, settings) {
     Object.defineProperty(this, 'id', { value: id });
     Object.defineProperty(this, 'settings', { value: settings.clone() });
-    Object.defineProperty(this, '_database', { value: new Keyv(settings.databaseURL, { namespace: id }) });
+    Object.defineProperty(this, '_database', { value: new Keyv(settings.databaseURL, { namespace: `guild_settings_${id}` }) });
 
     this.settings.guild = this;
   }
