@@ -4,9 +4,7 @@ module.exports = {
   name: 'set',
   description: 'Set guild settings',
   permissions: [],
-  async execute(message, settings, args = []) {
-    const key = args.shift();
-
+  async execute(message, settings, key, ...args) {
     return settings.set(key, message, ...args)
       .then(async () => {
         const value = await settings.formatted(key, message);

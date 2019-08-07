@@ -4,9 +4,7 @@ module.exports = {
   name: 'get',
   description: 'Get guild settings',
   permissions: [],
-  async execute(message, settings, args = []) {
-    const key = args.shift();
-
+  async execute(message, settings, key, ...args) {
     return settings.formatted(key, message, ...args)
       .then((value) => {
         if (value === undefined) {

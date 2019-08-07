@@ -26,7 +26,7 @@ module.exports = {
 
         // Execute command if user is authorized in current channel
         if (command.permissions && !message.channel.permissionsFor(message.author).has(command.permissions)) return;
-        return command.execute(message, settings, args)
+        return command.execute(message, settings, ...args)
           .catch((e) => {
             console.error(e);
             message.reply('there was an error trying to execute that command!');
