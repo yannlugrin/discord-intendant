@@ -3,7 +3,7 @@ module.exports = {
   description: 'Countdown before release',
   permissions: [],
   settings: [
-    { key: 'releaseTime', type: 'Time', permissions: ['ADMINISTRATOR'], default: false },
+    { key: 'releaseTime', type: 'Time', permissions: ['ADMINISTRATOR'] },
   ],
   async execute(message, settings) {
     const releaseTime = await settings.get('releaseTime');
