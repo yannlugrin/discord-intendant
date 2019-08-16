@@ -1,8 +1,20 @@
-const { readdirSync } = require('fs');
+const { readdirSync, statSync } = require('fs');
+const path = require('path');
 const Discord = require('discord.js');
 const Guild = require('bot/models/guild');
 const Settings = require('bot/models/settings');
 const { DefaultSettings } = require('constants');
+
+// TO be able to load commands & events files recursively
+const recursiveReadDirSync = (dir, files = []) => {
+  dir = path.resolve(dir);
+  readdirSync(dir).forEach((file) => {
+    const filePath = path.join(dir, file);
+    files = statSync(filePath).isDirectory() ? recursiveReadDirSync(filePath) : files.concat(filePath);
+  });
+
+  return files;
+};
 
 /*
  * Bot class
@@ -19,13 +31,13 @@ class Bot {
     this.guilds = new Discord.Collection();
 
     // Load commands
-    const commandFiles = readdirSync('./src/bot/commands');
+    const commandFiles = recursiveReadDirSync('./src/bot/commands');
     for (const file of commandFiles) {
       this._loadCommand(file);
     }
 
     // Load events
-    const eventFiles = readdirSync('./src/bot/events');
+    const eventFiles = recursiveReadDirSync('./src/bot/events');
     for (const file of eventFiles) {
       this._loadEvent(file);
     }
@@ -108,8 +120,8 @@ class Bot {
     if (!file.endsWith(".js")) return;
 
     try {
-      console.info(`Loading command: ${file.split('.').slice(0, -1).join('.')}`);
-      const command = require(`./bot/commands/${file}`);
+      console.info(`Loading command: ${path.basename(file, '.js')}`);
+      const command = require(file);
       console.info(` ${command.description}`);
       for (const setting of command.settings || []) {
         console.info(` - setting: ${setting.key} (${setting.type})`);
@@ -128,8 +140,8 @@ class Bot {
     if (!file.endsWith(".js")) return;
 
     try {
-      console.info(`Loading event: ${file.split('.').slice(0, -1).join('.')}`);
-      const event = require(`./bot/events/${file}`);
+      console.info(`Loading event: ${path.basename(file, '.js')}`);
+      const event = require(file);
       for (const setting of event.settings || []) {
         console.info(` - setting: ${setting.key} (${setting.type})`);
         this.settings.definitions.set(setting.key, setting);
