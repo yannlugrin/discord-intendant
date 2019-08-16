@@ -17,8 +17,22 @@ module.exports = {
 
         if (!message.content.startsWith(prefix)) return;
 
-        const args = message.content.slice(prefix.length).split(/ +/);
-        const commandName = args.shift().toLowerCase();
+        // Parse single word and quoted sentence args.
+        const args = [];
+
+        const argsRegexp = /[^\s"]+|"([^"]*)"/gi;
+        let match = null;
+        do {
+          match = argsRegexp.exec(message.content);
+          if (match != null)
+          {
+            // Index 1 in the array is the captured group if it exists
+            // Index 0 is the matched text, which we use if no captured group exists
+            args.push(match[1] ? match[1] : match[0]);
+          }
+        } while (match != null);
+
+        const commandName = args.shift().slice(prefix.length).toLowerCase();
 
         // Ignore command if doesn't exists
         if (!this.commands.has(commandName)) return;
