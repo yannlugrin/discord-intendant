@@ -3,7 +3,7 @@ module.exports = {
   description: 'Display all guild settings',
   async execute(message, settings) {
     const values = [''];
-    const keys = Array.from(settings.definitions.keys()).sort();
+    const keys = Array.from(settings.definitions.filter(s => !s.private).keys()).sort();
 
     for (const key of keys) {
       try {

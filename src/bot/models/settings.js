@@ -33,10 +33,10 @@ class Settings extends Collection {
     const definition = this.definitions.get(key);
     if (!definition) throw new UnauthorizedError(`Set '${key}' setting is forbidden!`);
 
-    // Setting set without message is internal, so internal are authoritzed. Otherwise
+    // Setting set without message is private, so private are authoritzed. Otherwise
     // check permissions of message author
     const message = (args[0] instanceof Discord.Message) ? args.shift() : undefined;
-    if (message && (definition.internal || !message.channel.permissionsFor(message.author).has(this._definitions.get(key).permissions))) {
+    if (message && (definition.private || !message.channel.permissionsFor(message.author).has(this._definitions.get(key).permissions))) {
       throw new UnauthorizedError(`Set '${key}' setting is forbidden!`);
     }
 
@@ -99,7 +99,7 @@ class SettingsDefinition extends Collection {
   set(key, values) {
     const type = values.type;
     const permissions = values.permissions.sort();
-    const internal = values.internal || false;
+    const privateValue = values.private || false;
     const defaultValue = values.default;
 
     if (this.has(key)) {
@@ -116,7 +116,7 @@ class SettingsDefinition extends Collection {
       type: type,
       permissions: permissions,
       default: defaultValue,
-      internal: internal,
+      private: privateValue,
       formatted: formatted,
       compute: compute,
       validate: validate,

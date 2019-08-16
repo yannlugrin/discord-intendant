@@ -4,7 +4,7 @@ module.exports = {
   settings: [
     { key: 'discordRulesEnabled', type: 'Boolean', permissions: ['ADMINISTRATOR'], default: false },
     { key: 'discordRulesMessage', type: 'String', permissions: ['ADMINISTRATOR'] },
-    { key: 'discordRulesChannel', type: 'Channel', permissions: ['ADMINISTRATOR'], internal: true },
+    { key: 'discordRulesChannel', type: 'Channel', permissions: ['ADMINISTRATOR'], private: true },
     { key: 'discordRulesReaction', type: 'String', permissions: ['ADMINISTRATOR'] },
     { key: 'discordRulesPromote', type: 'Role', permissions: ['ADMINISTRATOR'] },
   ],
