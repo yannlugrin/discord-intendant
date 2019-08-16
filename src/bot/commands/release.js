@@ -25,6 +25,8 @@ module.exports = {
     if (days < 5 && hours === 0) return message.channel.send(`Presque, on y est presque, encore ${days} jours et ${minutes} minutes.`);
     if (days < 5 && hours === 1) return message.channel.send(`Presque, on y est presque, encore ${days} jours, 1 heure et ${minutes} minutes.`);
     if (days < 5) return message.channel.send(`Presque, on y est presque, encore ${days} jours, ${hours} heures et ${minutes} minutes.`);
+    if (hours === 0) return message.channel.send(`Patience, encore ${days} jours et ${minutes} minutes.`);
+    if (hours === 1) return message.channel.send(`Patience, encore ${days} jours, 1 heure et ${minutes} minutes.`);
     return message.channel.send(`Patience, encore ${days} jours, ${hours} heures et ${minutes} minutes.`);
   }
 };
