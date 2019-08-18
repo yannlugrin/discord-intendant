@@ -7,7 +7,6 @@ module.exports = {
   ],
   async execute(message, settings) {
     const releaseTime = await settings.get('releaseTime');
-    if (!releaseTime) return;
     if (!releaseTime) return message.channel.send('Pas de release en vue ;-(');
 
     const now = new Date();
