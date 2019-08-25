@@ -5,7 +5,6 @@ module.exports = {
     { key: 'guildRulesEnabled', type: 'Boolean', permissions: ['ADMINISTRATOR'], default: false },
     { key: 'guildRulesMessage', type: 'String', permissions: ['ADMINISTRATOR'] },
     { key: 'guildRulesChannel', type: 'Channel', permissions: ['ADMINISTRATOR'], private: true },
-    { key: 'guildRulesLog', type: 'Channel', permissions: ['ADMINISTRATOR'] },
     { key: 'guildRulesReaction', type: 'String', permissions: ['ADMINISTRATOR'] },
     { key: 'guildRulesPromote', type: 'Role', permissions: ['ADMINISTRATOR'] },
   ],
@@ -31,16 +30,12 @@ module.exports = {
           if (value !== reaction.message.channel.id) return settings.set('guildRulesChannel', reaction.message.channel.id);
         });
 
-        const member = await reaction.message.guild.fetchMember(user);
-        return member.addRole(await settings.get('guildRulesPromote'))
-          .then(() => {
-            return settings.get('guildRulesLog');
+        return reaction.message.guild.fetchMember(user)
+          .then((member) => {
+            return settings.get('guildRulesPromote').then(member.addRole.bind(member)).then(() => { return member });
           })
-          .then((channelID) => {
-            return member.guild.channels.find(c => c.id === channelID);
-          })
-          .then((channel) => {
-            return channel.send(this.render('{{mention}} signed guild rules', { member: member }));
+          .then((member) => {
+            settings.guild.log('{{mention}} signed guild rules', { member: member });
           })
           .catch(console.error);
       }

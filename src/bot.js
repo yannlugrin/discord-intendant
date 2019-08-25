@@ -24,11 +24,13 @@ class Bot {
    * Bot class constructor
    */
   constructor() {
-    this.settings = new Settings(DefaultSettings);
 
     this.client = new Discord.Client();
     this.commands = new Discord.Collection();
     this.guilds = new Discord.Collection();
+
+    this.settings = new Settings(DefaultSettings);
+    this.settings.bot = this;
 
     // Load commands
     const commandFiles = recursiveReadDirSync('./src/bot/commands');

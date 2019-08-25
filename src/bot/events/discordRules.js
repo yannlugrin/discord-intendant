@@ -31,9 +31,13 @@ module.exports = {
         });
 
         return reaction.message.guild.fetchMember(user)
-          .then(async (member) => {
-            return member.addRole(await settings.get('discordRulesPromote'));
-          });
+          .then((member) => {
+            return settings.get('discordRulesPromote').then(member.addRole.bind(member)).then(() => { return member });
+          })
+          .then((member) => {
+            settings.guild.log('{{mention}} signed discord rules', { member: member });
+          })
+          .catch(console.error);
       }
     },
     {

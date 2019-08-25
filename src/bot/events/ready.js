@@ -1,4 +1,7 @@
 module.exports = {
+  settings: [
+    { key: 'logChannel', type: 'Channel', permissions: ['ADMINISTRATOR'] },
+  ],
   listeners: [
     {
       name: 'ready',

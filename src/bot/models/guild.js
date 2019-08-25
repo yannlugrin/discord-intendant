@@ -20,6 +20,17 @@ class Guild {
   async has(key) {
     return await this._database.get(key) !== undefined;
   }
+
+  /*
+   *
+   */
+  async log(...args) {
+    return this.get('logChannel').then((channelID) => {
+      if (!channelID) return;
+      this.settings.bot.client.channels.find(c => c.id === channelID)
+        .send(this.settings.bot.render(...args));
+    });
+  }
 }
 
 module.exports = Guild;

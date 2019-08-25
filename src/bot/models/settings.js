@@ -13,8 +13,10 @@ class Settings extends Collection {
     super(iterable);
 
     const definitions = (iterable && iterable._definitions) ? iterable._definitions : new SettingsDefinition();
+    const bot = (iterable && iterable.bot) ? iterable.bot : null;
 
     Object.defineProperty(this, '_definitions', { value: definitions });
+    Object.defineProperty(this, 'bot', { value: bot, writable: true, configurable: true });
     Object.defineProperty(this, 'guild', { value: null, writable: true, configurable: true });
   }
 

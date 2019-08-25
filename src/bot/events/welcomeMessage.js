@@ -16,6 +16,8 @@ module.exports = {
         // their own settings set.
         const settings = await this.getSettings(member.guild);
 
+        settings.guild.log('{{mention}} joined.', { member: member });
+
         // Do not proceed if welcome message is not enable
         if (await settings.not('welcomeEnabled')) return;
 
@@ -29,6 +31,15 @@ module.exports = {
 
         return welcomeChannel.send(welcomeMessage)
           .catch(console.error);
+      }
+    },
+    {
+      name: 'guildMemberRemove',
+      description: 'Log user left',
+      async execute(member) {
+        const settings = await this.getSettings(member.guild);
+
+        settings.guild.log('{{mention}} left.', { member: member });
       }
     },
   ]
