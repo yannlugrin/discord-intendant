@@ -19,22 +19,28 @@ module.exports = {
         // Load Guild settings and emoji
         const settings = await this.getSettings(reaction.message.guild);
         const emoji = reaction.emoji.id ? `${reaction.emoji.name}:${reaction.emoji.id}` : reaction.emoji.name;
+        const member = await reaction.message.guild.fetchMember(user);
 
         // Do not proceed if Guild rules are not enable, it's not right message or right emoji
         if (await settings.not('guildRulesEnabled')) return;
         if (reaction.message.id !== await settings.get('guildRulesMessage')) return;
-        if (emoji !== await settings.get('guildRulesReaction')) return;
+        if (emoji !== await settings.get('guildRulesReaction')) {
+          return reaction.remove(member);
+        }
 
         // Save message channel id to be able to retrive it later
         await settings.get('guildRulesChannel').then((value) => {
           if (value !== reaction.message.channel.id) return settings.set('guildRulesChannel', reaction.message.channel.id);
         });
 
-        return reaction.message.guild.fetchMember(user)
-          .then((member) => {
-            return settings.get('guildRulesPromote').then(member.addRole.bind(member)).then(() => { return member });
-          })
-          .then((member) => {
+        // Check rights to accepts rules
+        if (!reaction.message.channel.permissionsFor(member).has('ADD_REACTIONS')) {
+          return reaction.remove(member);
+        }
+
+        // Add role to member
+        return settings.get('guildRulesPromote').then(member.addRole.bind(member))
+          .then(() => {
             settings.guild.log('{{mention}} signed guild rules', { member: member });
           })
           .catch(console.error);
