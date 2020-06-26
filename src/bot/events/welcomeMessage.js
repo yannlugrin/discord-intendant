@@ -39,7 +39,7 @@ module.exports = {
       async execute(member) {
         const settings = await this.getSettings(member.guild);
 
-        settings.guild.log('{{mention}} left.', { member: member });
+        settings.guild.log('{{nickname}} ({{mention}}) left.', { member: member });
       }
     },
   ]
